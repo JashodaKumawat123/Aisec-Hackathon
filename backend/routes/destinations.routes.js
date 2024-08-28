@@ -3,6 +3,8 @@ const apiRouter = express.Router();
 const authWare = require("../middlewares/authWare");
 const customLocations = require("../models/customLocations");
 
+const User = require("../models/User");
+
 const maxRad = (lat1, lat2, lon1, lon2) => {
 	lon1 = (lon1 * Math.PI) / 180;
 	lon2 = (lon2 * Math.PI) / 180;
@@ -57,6 +59,71 @@ apiRouter.post("/pin", authWare, async (req, res) => {
 
 		res.json({
 			locationPinned,
+		});
+	} catch (err) {
+		console.log(err);
+		res.status(500).json({
+			err: err.message,
+		});
+	}
+});
+
+apiRouter.get("/visited", authWare, async (req, res) => {
+	try {
+		const { lat, long } = req.query;
+
+		const user = req.user;
+
+		// update the visit coutn
+		const updateCnt = await customLocations.findOneAndUpdate(
+			{
+				lat: lat,
+				long: long,
+			},
+			{
+				$inc: { visitCount: 1 },
+			},
+			{
+				new: true,
+			},
+		);
+
+		// see if the user has already visited the place
+		if (user == "public") {
+			console.log("public");
+			return res.json({
+				updateCnt,
+				visited: false,
+			});
+		}
+
+		const userRes = await User.findById(user);
+		console.log("userRes", userRes);
+		const visited = userRes.visitedLocations.find((location) => {
+			return location.lat == lat && location.long == long;
+		});
+		console.log("visited", visited);
+
+		if (!visited) {
+			userRes.visitedLocations.push({
+				lat,
+				long,
+				name: updateCnt.name,
+				locationId: updateCnt._id,
+				visitedCount: 1,
+				lastVisited: new Date(),
+			});
+			await userRes.save();
+		}
+		if (visited) {
+			visited.visitedCount += 1;
+			visited.lastVisited = new Date();
+			await userRes.save();
+		}
+
+		return res.json({
+			updateCnt,
+			visited: !!visited,
 		});
 	} catch (err) {
 		console.log(err);

@@ -6,7 +6,7 @@ const authPassThrough = process.env.AUTH_PASS_THROUGH;
 console.log(authPassThrough);
 
 async function authWare(req, res, next) {
-	if (authPassThrough) {
+	if (authPassThrough == true) {
 		req.user = "public";
 		return next();
 	}

@@ -2,6 +2,7 @@ const express = require("express");
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const JwtHelper = require("../utils/jwtHelper");
+const authWare = require("../middlewares/authWare");
 
 const apiRouter = express();
 
@@ -96,4 +97,26 @@ apiRouter.post("/login", async (req, res) => {
 		});
 	}
 });
+
+apiRouter.get("/profile", authWare, async (req, res) => {
+	try {
+		const user = req.user;
+		if (user == "public") {
+			return res.json({
+				name: "public",
+				userType: "public",
+			});
+		}
+
+		const userRes = await User.findById(user);
+
+		res.json(userRes);
+	} catch (err) {
+		console.log(err);
+		res.status(500).json({
+			err: err.message,
+		});
+	}
+});
+
 module.exports = apiRouter;

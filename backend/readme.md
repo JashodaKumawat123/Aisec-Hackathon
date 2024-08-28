@@ -121,3 +121,58 @@
   ]
 }
 ```
+
+### User visited a pinned location
+
+- URL: `/dest/visited?lat=31.0988956&long=75.9779626`
+- Method: `GET`
+- Success Response:
+
+```json
+{
+  "updateCnt": {
+    "_id": "66cf9890bdcd04434b18646e",
+    "name": "Gurudwara Panj Tirath Sahib",
+    "lat": 31.0988956,
+    "long": 75.9779626,
+    "description": "",
+    "keywords": [
+      "historical_landmark",
+      "place_of_worship",
+      "point_of_interest",
+      "establishment"
+    ],
+    "pinnedByUser": "public",
+    "visitCount": 16,
+    "__v": 0
+  },
+  "visited": true
+}
+```
+
+### View User Profile
+
+- URL: `/auth/profile`
+- Method: `GET`
+- Success Response:
+
+```json
+{
+  "_id": "66cf7341b86f84aceb6caf2e",
+  "name": "alan",
+  "email": "alanjames@gmail.com",
+  "passwordHash": "$2b$10$sAbvzK2Tnw1JI.B6TKqsO.dPsb.S2i1ghgF71y9oIBvijfh22ZFM2",
+  "userType": "casual",
+  "createdAt": "2024-08-28T18:58:09.925Z",
+  "__v": 1,
+  "visitedLocations": [
+    {
+      "lat": 31.0988956,
+      "long": 75.9779626,
+      "name": "Gurudwara Panj Tirath Sahib",
+      "locationId": "66cf9890bdcd04434b18646e",
+      "_id": "66cf9e574b950d4bbb012577"
+    }
+  ]
+}
+```
