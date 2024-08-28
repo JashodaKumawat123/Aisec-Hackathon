@@ -2,6 +2,7 @@ const express = require("express");
 const apiRouter = express.Router();
 const authWare = require("../middlewares/authWare");
 const customLocations = require("../models/customLocations");
+const { addRewards } = require("../utils/addRewards");
 
 const User = require("../models/User");
 
@@ -57,6 +58,10 @@ apiRouter.post("/pin", authWare, async (req, res) => {
 			pinnedByUser: user,
 		});
 
+		// give rewards
+		await addRewards(user, "pin");
+		await addRewards(user, "visit");
+
 		res.json({
 			locationPinned,
 		});
@@ -104,6 +109,13 @@ apiRouter.get("/visited", authWare, async (req, res) => {
 		});
 		console.log("visited", visited);
 
+		// give rewards
+		// check the the last time the user visited the location
+		// if the user has visited the location before, then do not give rewards
+		if (!visited) {
+			await addRewards(user, "visit");
+			await addRewards(updateCnt.pinnedByUser, "pin_visited_by_others");
+		}
 		if (!visited) {
 			userRes.visitedLocations.push({
 				lat,
