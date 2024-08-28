@@ -40,6 +40,8 @@ apiRouter.post("/signup", async (req, res) => {
 		});
 		res.json({
 			token,
+			name: userCreated.name,
+			userType: userCreated.userType,
 		});
 	} catch (err) {
 		console.log(err);
@@ -84,6 +86,8 @@ apiRouter.post("/login", async (req, res) => {
 
 		return res.json({
 			token,
+			name: user.name,
+			userType: user.userType,
 		});
 	} catch (err) {
 		console.log(err);
